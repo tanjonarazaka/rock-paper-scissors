@@ -1,72 +1,46 @@
-let humanScore, computerScore;
-humanScore = computerScore = 0;
+let humanScore = 0;
+let computerScore = 0;
+
+const choices = ['rock', 'paper', 'scissors'];
 
 const rockBtn = document.createElement("button");
 const paperBtn = document.createElement("button");
 const scissorsBtn = document.createElement("button");
+const restartBtn = document.createElement("button");
 
 rockBtn.textContent = "Rock";
 paperBtn.textContent = "Paper";
 scissorsBtn.textContent = "Scissors";
+restartBtn.textContent = "Play Again";
+restartBtn.style.display = "none";
 
 const div = document.createElement("div");
 let displayResult = document.createElement("p");
 let displayScore = document.createElement("p");
-
-rockBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    let result;
-
-    result = playRound("rock", getComputerChoice());
-    displayResultAndScore(result);
-});
-
-paperBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    let result;
-
-    result = playRound("paper", getComputerChoice());
-    displayResultAndScore(result);
-});
-
-scissorsBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    let result;
-
-    result = playRound("scissors", getComputerChoice());
-    displayResultAndScore(result);
-});
-
-document.body.insertBefore(div, document.body.querySelector("script"));
 
 div.appendChild(rockBtn);
 div.appendChild(paperBtn);
 div.appendChild(scissorsBtn);
 div.appendChild(displayResult);
 div.appendChild(displayScore);
+div.appendChild(restartBtn);
+document.body.insertBefore(div, document.body.querySelector("script"));
 
 
+// --- Event listeners ---
+rockBtn.addEventListener("click", () => displayResultAndScore(playRound("rock", getComputerChoice())));
+paperBtn.addEventListener("click", () => displayResultAndScore(playRound("paper", getComputerChoice())));
+scissorsBtn.addEventListener("click", () => displayResultAndScore(playRound("scissors", getComputerChoice())));
+restartBtn.addEventListener("click", resetGame);
+
+// --- Helper functions ---
 /**
- * getComputerChoice() generates a random number between 1 to 3.
- * Returns "rock" if the value is 1, "paper" if 2 and "scissors" if 3.
+ * getComputerChoice() generates a random value from the choices array
  */
     
 
 function getComputerChoice() {
-    let num = Math.floor(Math.random() * 3) + 1;
-
-    if(num === 1) {
-        return "rock";
-    } 
-    else if(num === 2) {
-        return "paper";
-    } 
-    else {
-        return "scissors";
-    }
+   return choices[Math.floor(Math.random() * choices.length)];
 }
 
 /**
@@ -120,22 +94,39 @@ function playRound(humanChoice, computerChoice) {
  * if one of the player reaches 5
  */
 function displayResultAndScore(result) {
-    let score = `Score: You: ${humanScore} Computer: ${computerScore}`;
-
-    if(humanScore === 5) {
-        displayResult.textContent = "You win the game!";
-    }
-    else if(computerScore === 5) {
-        displayResult.textContent = "Computer wins the game!";
-    }
-    else {
-        displayResult.textContent = result;
-    }
-    
-    displayScore.textContent = score;
+    displayResult.textContent = result;
+    displayScore.textContent = `Score: You ${humanScore} - ${computerScore} Computer`;
 
     if(humanScore === 5 || computerScore === 5) {
-        humanScore = computerScore = 0;
+        endGame();
     }
+}
+
+function endGame() {
+    // Disable the choice buttons
+    rockBtn.disabled = paperBtn.disabled = scissorsBtn.disabled = true;
+
+    // Display winner
+    if (humanScore === 5) {
+        displayResult.textContent = "🎉 You win the game!";
+    } else {
+        displayResult.textContent = "💻 Computer wins the game!";
+    }
+
+    // Show restart button
+    restartBtn.style.display = "inline-block";
+}
+
+function resetGame() {
+    humanScore = 0;
+    computerScore = 0;
+    displayResult.textContent = "Game restarted! Make your move.";
+    displayScore.textContent = `Score: You ${humanScore} - ${computerScore} Computer`;
+
+    // Re-enable buttons
+    rockBtn.disabled = paperBtn.disabled = scissorsBtn.disabled = false;
+
+    // Hide restart button
+    restartBtn.style.display = "none";
 }
 
